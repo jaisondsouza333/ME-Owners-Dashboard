@@ -213,6 +213,30 @@
   #app-frame{width:100%;height:100%;border:0;border-radius:35px;background:#fff;}
   #app-overlay .ov-close{background:#fff;color:#1a1f36;border:none;border-radius:100px;padding:9px 18px;font-family:var(--font);font-weight:800;font-size:13.5px;cursor:pointer;}
 
+  /* ── COMPARATIVE ANALYSIS ── */
+  .cmp-chips{display:flex;gap:8px;flex-wrap:wrap;}
+  .chipx{font-family:var(--font);font-size:12.5px;font-weight:700;padding:6px 12px;border-radius:100px;border:1px solid var(--border2);background:var(--surface);color:var(--text2);cursor:pointer;transition:all .12s;}
+  .chipx:hover{background:var(--bg);color:var(--text);}
+  .chipx.on{background:var(--accent-s);border-color:var(--accent);color:var(--accent);}
+  .cmp-ctl{display:flex;gap:10px 14px;flex-wrap:wrap;align-items:flex-end;margin-top:13px;padding-top:13px;border-top:1px solid var(--border);}
+  .cmp-ctl label{font-size:11.5px;font-weight:700;color:var(--text3);display:flex;flex-direction:column;gap:4px;}
+  .vgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:13px;}
+  .vtile{border:1px solid var(--border);border-radius:var(--r-lg);padding:11px 13px;background:var(--surface2);}
+  .vtile .vl{font-size:10.5px;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;}
+  .vtile .vc{font-size:20px;font-weight:800;font-family:var(--mono);letter-spacing:-.6px;margin-top:3px;}
+  .vtile .vp{font-size:12px;color:var(--text2);font-weight:600;margin-top:1px;}
+  .dchip{display:inline-flex;align-items:center;gap:4px;margin-top:7px;padding:2px 8px;border-radius:100px;font-size:12px;font-weight:800;}
+  .dchip.up{background:var(--green-soft);color:var(--green-text);}
+  .dchip.dn{background:var(--red-soft);color:var(--red-text);}
+  .dchip.flat{background:var(--surface);color:var(--text2);border:1px solid var(--border2);}
+  .vbar{display:inline-block;width:64px;height:7px;border-radius:100px;background:var(--border);overflow:hidden;vertical-align:middle;}
+  .vbar>i{display:block;height:100%;border-radius:100px;}
+  .lgnd{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;font-weight:700;color:var(--text2);align-items:center;}
+  .lgnd span{display:inline-flex;align-items:center;gap:6px;}
+  .lgnd i{width:11px;height:11px;border-radius:3px;display:inline-block;}
+  .insight{display:flex;gap:9px;align-items:flex-start;margin-top:14px;padding:11px 13px;border-radius:var(--r-lg);background:var(--accent-s);border:1px solid var(--red-border);font-size:13px;font-weight:600;line-height:1.55;}
+  .scrollx{overflow-x:auto;margin-top:14px;border-top:1px solid var(--border);}
+  @media(max-width:820px){ .vgrid{grid-template-columns:1fr 1fr;} }
 </style>
 </head>
 <body>
@@ -324,6 +348,105 @@
       </div>
     </div>
 
+    <div class="card" id="cmpa-card">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+        <div><div class="card-t">Comparative analysis</div><div class="card-sub" style="margin-bottom:0;">Compare any period against the same period last year, the prior period, or a window you choose.</div></div>
+        <button class="mini" onclick="opCmpAExport()">⬇ Export comparison (CSV)</button>
+      </div>
+
+      <div class="cmp-chips" style="margin-top:12px;">
+        <button class="chipx on" id="cmpa-pre-0" onclick="opCmpAPreset(0)">This month vs last year</button>
+        <button class="chipx" id="cmpa-pre-1" onclick="opCmpAPreset(1)">This month vs last month</button>
+        <button class="chipx" id="cmpa-pre-2" onclick="opCmpAPreset(2)">This quarter vs last year</button>
+        <button class="chipx" id="cmpa-pre-3" onclick="opCmpAPreset(3)">Last quarter vs prior quarter</button>
+        <button class="chipx" id="cmpa-pre-4" onclick="opCmpAPreset(4)">YTD vs last year</button>
+        <button class="chipx" id="cmpa-pre-5" onclick="opCmpAPreset(5)">Last 30d vs prior 30d</button>
+        <button class="chipx" id="cmpa-pre-6" onclick="opCmpAPreset(6)">Custom…</button>
+      </div>
+
+      <div class="cmp-ctl">
+        <label>Period
+          <select id="cmpa-period" onchange="opCmpASet()">
+            <option value="mtd">Month to date</option>
+            <option value="lastmonth">Last full month</option>
+            <option value="qtd">Quarter to date</option>
+            <option value="lastq">Last full quarter</option>
+            <option value="ytd">Year to date</option>
+            <option value="lastyear">Last full year</option>
+            <option value="l7">Last 7 days</option>
+            <option value="l30">Last 30 days</option>
+            <option value="l90">Last 90 days</option>
+            <option value="l365">Last 365 days</option>
+            <option value="custom">Custom range…</option>
+          </select>
+        </label>
+        <label>Compare with
+          <select id="cmpa-bench" onchange="opCmpASet()">
+            <option value="yoy">Same period last year</option>
+            <option value="yoy2">Same period 2 years ago</option>
+            <option value="prior">Prior period</option>
+            <option value="custom">Custom range…</option>
+          </select>
+        </label>
+        <label id="cmpa-basis-wrap">Basis
+          <select id="cmpa-basis" onchange="opCmpASet()">
+            <option value="like">Like-for-like (same days)</option>
+            <option value="full">Full calendar period</option>
+          </select>
+        </label>
+        <label>Breakdown
+          <select id="cmpa-dim" onchange="opCmpASet()">
+            <option value="machine">By machine</option>
+            <option value="loc">By location</option>
+            <option value="game">By game theme</option>
+          </select>
+        </label>
+      </div>
+
+      <div style="display:flex;gap:10px 14px;flex-wrap:wrap;align-items:flex-end;margin-top:11px;">
+        <div id="cmpa-cust-a" style="display:none;gap:10px;align-items:flex-end;flex-wrap:wrap;">
+          <label style="font-size:11.5px;font-weight:700;color:var(--text3);display:flex;flex-direction:column;gap:4px;">Current from<input type="date" id="cmpa-af"></label>
+          <label style="font-size:11.5px;font-weight:700;color:var(--text3);display:flex;flex-direction:column;gap:4px;">Current to<input type="date" id="cmpa-at"></label>
+        </div>
+        <div id="cmpa-cust-b" style="display:none;gap:10px;align-items:flex-end;flex-wrap:wrap;">
+          <label style="font-size:11.5px;font-weight:700;color:var(--text3);display:flex;flex-direction:column;gap:4px;">Benchmark from<input type="date" id="cmpa-bf"></label>
+          <label style="font-size:11.5px;font-weight:700;color:var(--text3);display:flex;flex-direction:column;gap:4px;">Benchmark to<input type="date" id="cmpa-bt"></label>
+        </div>
+        <button class="mini prim" id="cmpa-apply" onclick="opCmpAApply()" style="display:none;">Apply ranges</button>
+        <span id="cmpa-cust-msg" style="font-size:12.5px;color:var(--amber-text);font-weight:700;"></span>
+      </div>
+
+      <div id="cmpa-head" style="margin-top:14px;padding-top:13px;border-top:1px solid var(--border);"></div>
+      <div class="vgrid" id="cmpa-tiles"></div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:18px;">
+        <div style="font-size:13px;font-weight:800;" id="cmpa-chart-t">Period-over-period trend</div>
+        <div class="lgnd">
+          <span><i style="background:var(--accent);"></i><b id="cmpa-lg-a">Current</b></span>
+          <span><i style="background:var(--border2);"></i><b id="cmpa-lg-b">Comparison</b></span>
+        </div>
+      </div>
+      <svg id="cmpa-chart" viewBox="0 0 720 232" style="width:100%;height:auto;margin-top:4px;"></svg>
+
+      <div class="scrollx">
+        <table class="tbl">
+          <thead><tr>
+            <th id="cmpa-dim-th">Machine</th>
+            <th style="text-align:right;">Current</th>
+            <th style="text-align:right;">Comparison</th>
+            <th style="text-align:right;">Variance</th>
+            <th style="text-align:right;">Variance %</th>
+            <th style="text-align:right;">Swing</th>
+            <th style="text-align:right;">Your share</th>
+          </tr></thead>
+          <tbody id="cmpa-tbody"></tbody>
+          <tfoot><tr id="cmpa-tfoot" style="border-top:2px solid var(--border2);background:var(--surface2);"></tr></tfoot>
+        </table>
+      </div>
+
+      <div class="insight" id="cmpa-insight"></div>
+    </div>
+
     <div class="card">
       <div class="card-t">Revenue analytics</div>
       <div class="card-sub" id="pie-sub">Share of net win by location and by slot machine · last 7 days</div>
@@ -402,7 +525,75 @@
         </label>
         <label style="font-size:11.5px;font-weight:700;color:var(--text3);display:flex;flex-direction:column;gap:4px;">From<input type="date" id="stmt-from" onchange="opRenderStatements()"></label>
         <label style="font-size:11.5px;font-weight:700;color:var(--text3);display:flex;flex-direction:column;gap:4px;">To<input type="date" id="stmt-to" onchange="opRenderStatements()"></label>
+        <label style="font-size:11.5px;font-weight:700;color:var(--text3);display:flex;flex-direction:column;gap:4px;">Show
+          <select id="stmt-limit" onchange="opRenderStatements()"><option value="26">Latest 26 weeks</option><option value="52">Latest 52 weeks</option><option value="all">All history</option></select>
+        </label>
         <button class="mini" onclick="opStmtClearFilters()">Clear</button>
+      </div>
+    </div>
+
+    <div class="card" id="stc-card">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+        <div><div class="card-t">Statement comparison</div><div class="card-sub" style="margin-bottom:0;">Roll your weekly statements up by month, quarter or year and compare them against last year or the period before.</div></div>
+        <button class="mini" onclick="opStmtCmpExport()">⬇ Export comparison (CSV)</button>
+      </div>
+
+      <div class="cmp-ctl">
+        <label>Group by
+          <div class="cmp-metric" id="stc-group">
+            <button class="on" data-v="month" onclick="opStmtCmpSet('group','month')">Month</button>
+            <button data-v="quarter" onclick="opStmtCmpSet('group','quarter')">Quarter</button>
+            <button data-v="year" onclick="opStmtCmpSet('group','year')">Year</button>
+          </div>
+        </label>
+        <label>Compare with
+          <div class="cmp-metric" id="stc-bench">
+            <button class="on" data-v="yoy" onclick="opStmtCmpSet('bench','yoy')">Last year</button>
+            <button data-v="yoy2" onclick="opStmtCmpSet('bench','yoy2')">2 years ago</button>
+            <button data-v="prior" onclick="opStmtCmpSet('bench','prior')">Prior period</button>
+          </div>
+        </label>
+        <label>Measure
+          <div class="cmp-metric" id="stc-mode">
+            <button class="on" data-v="same" onclick="opStmtCmpSet('mode','same')">Equal weeks</button>
+            <button data-v="total" onclick="opStmtCmpSet('mode','total')">Period total</button>
+            <button data-v="avg" onclick="opStmtCmpSet('mode','avg')">Per-week avg</button>
+          </div>
+        </label>
+      </div>
+
+      <div class="vgrid" id="stc-tiles"></div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:18px;">
+        <div style="font-size:13px;font-weight:800;" id="stc-chart-t">Owner share by month</div>
+        <div class="lgnd">
+          <span><i style="background:var(--accent);"></i><b id="stc-lg-a">Your share</b></span>
+          <span><i style="background:var(--border2);"></i><b id="stc-lg-b">Last year</b></span>
+        </div>
+      </div>
+      <svg id="stc-chart" viewBox="0 0 720 232" style="width:100%;height:auto;margin-top:4px;"></svg>
+
+      <div class="scrollx">
+        <table class="tbl">
+          <thead><tr>
+            <th>Period</th>
+            <th style="text-align:right;" id="stc-th-n">Wks now / then</th>
+            <th style="text-align:right;">Net Terminal Income</th>
+            <th style="text-align:right;" id="stc-th-v">Your share</th>
+            <th style="text-align:right;" id="stc-th-b">Last year</th>
+            <th style="text-align:right;">Variance</th>
+            <th style="text-align:right;">Variance %</th>
+            <th style="text-align:right;">Swing</th>
+            <th style="text-align:right;">Drill in</th>
+          </tr></thead>
+          <tbody id="stc-tbody"></tbody>
+        </table>
+      </div>
+      <div style="font-size:11.5px;color:var(--text3);font-weight:600;margin-top:10px;line-height:1.6;">
+        Weekly statements don't line up exactly with calendar months, so you get three ways to read the comparison.
+        <b>Equal weeks</b> (default) measures the same number of statement weeks a year earlier — the honest like-for-like answer while a period is still in progress.
+        <b>Period total</b> shows the raw calendar totals from your books, with the week counts side by side.
+        <b>Per-week avg</b> divides each period by its statement count. Any period that isn't finished carries an “in progress” badge.
       </div>
     </div>
 
@@ -524,7 +715,7 @@
 <!-- Guided demo overlay -->
 <div class="demo-spot" id="demo-spot"></div>
 <div class="demo-cursor" id="demo-cursor"><svg width="22" height="22" viewBox="0 0 24 24" fill="#0E1E38" stroke="#fff" stroke-width="1.3"><path d="M5 3l14 8-6 1.6 3.4 6.4-2.6 1.4-3.4-6.5L5 20z"/></svg><span class="ring"></span></div>
-<div class="demo-cap" id="demo-cap"><div class="row"><span class="step" id="demo-step">1 / 20</span><div class="txt" id="demo-txt"></div><button class="stop" onclick="opDemoStop()">✕ Stop</button></div><div class="bar"><i id="demo-bar"></i></div></div>
+<div class="demo-cap" id="demo-cap"><div class="row"><span class="step" id="demo-step">1 / 29</span><div class="txt" id="demo-txt"></div><button class="stop" onclick="opDemoStop()">✕ Stop</button></div><div class="bar"><i id="demo-bar"></i></div></div>
 
 <script>
 
@@ -589,12 +780,543 @@
   }
   window.opSetLocation=function(val){
     locSel=val; MACHINES=machinesFor(locSel);
-    STATEMENTS=buildStatements(locTotal(7)); stmtYearsInit=false;
+    STATEMENTS=buildStatements(); stmtYearsInit=false;
     var sub=$('tb-sub'); if(sub&&$('p-revenue')&&$('p-revenue').classList.contains('active')) sub.textContent='Revenue for '+locScope();
     applyActive();
     if($('p-statements')&&$('p-statements').classList.contains('active')) renderStatements();
     toast('Showing '+(locSel==='all'?'all locations':locName(locSel)),'📍');
   };
+
+
+  /* ══════════════════════════════════════════════════════════════════════
+     HISTORICAL ENGINE  ·  drives all comparative analysis
+     A deterministic daily net-win model (trend + day-of-week + seasonality
+     + noise), normalised so the trailing 7 days match locTotal(7) exactly.
+     Every comparison, rollup and statement is derived from this one model,
+     so the dashboard and the statements always agree.
+     ══════════════════════════════════════════════════════════════════════ */
+  var REF_TODAY=new Date(2026,5,14);                                   /* demo "today" = latest statement week-end */
+  var DOW_F=[0.95,0.82,0.84,0.90,0.98,1.20,1.31];                      /* Sun→Sat (avg 1.0) */
+  var MON_F=[0.94,0.97,1.06,1.03,1.02,1.00,0.97,0.95,0.99,1.04,1.02,1.01];
+  var EPOCH=new Date(2019,0,1);
+
+  function D0(d){ return new Date(d.getFullYear(),d.getMonth(),d.getDate()); }
+  function addDays(d,n){ var x=D0(d); x.setDate(x.getDate()+n); return x; }
+  function sameDay(a,b){ return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate(); }
+  function dayCount(f,t){ return Math.round((D0(t)-D0(f))/864e5)+1; }
+  function dayNo(d){ return Math.round((D0(d)-EPOCH)/864e5); }
+  function startOfMonth(d){ return new Date(d.getFullYear(),d.getMonth(),1); }
+  function endOfMonth(d){ return new Date(d.getFullYear(),d.getMonth()+1,0); }
+  function startOfQuarter(d){ return new Date(d.getFullYear(),Math.floor(d.getMonth()/3)*3,1); }
+  function endOfQuarter(d){ return new Date(d.getFullYear(),Math.floor(d.getMonth()/3)*3+3,0); }
+  function shiftY(d,n){ return new Date(d.getFullYear()-n,d.getMonth(),d.getDate()); }
+  function yrsFrom(d){ return (D0(d)-REF_TODAY)/(365.25*864e5); }
+
+  var NZ=86;                                                           /* noise seed for the demo dataset */
+  function hashF(k,lo,hi){ var x=Math.sin(k*12.9898+78.233)*43758.5453; x=x-Math.floor(x); return lo+x*(hi-lo); }
+  function dayIdx(d){ var n=dayNo(d)+NZ;
+    return Math.pow(GROWTH,yrsFrom(d))*DOW_F[d.getDay()]*MON_F[d.getMonth()]
+           *hashF(n,0.965,1.035)*hashF(Math.floor(n/7)*7+3,0.975,1.025); }
+  var DAY_K=(function(){ var s=0; for(var i=6;i>=0;i--) s+=dayIdx(addDays(REF_TODAY,-i)); return 7/s; })();
+
+  function baseDaily(){ var s=0; MACHINES.forEach(function(m){ s+=m.today; }); return s; }
+  function rangeNet(from,to){
+    var bd=baseDaily(),s=0,n=0,d=D0(from),e=D0(to);
+    while(d<=e&&n<1600){ s+=dayIdx(d); n++; d=addDays(d,1); }
+    return {net:bd*DAY_K*s,days:n};
+  }
+  function R(from,to,kind){ return {from:D0(from),to:D0(to),kind:kind||'custom',days:dayCount(from,to)}; }
+
+  function isMonthFull(r){ return r.from.getDate()===1&&sameDay(r.to,endOfMonth(r.from)); }
+  function isQtrFull(r){ return sameDay(r.from,startOfQuarter(r.from))&&sameDay(r.to,endOfQuarter(r.from)); }
+  function isYearFull(r){ return r.from.getMonth()===0&&r.from.getDate()===1&&r.to.getMonth()===11&&r.to.getDate()===31; }
+  function rLabel(r){
+    if(isYearFull(r)) return ''+r.from.getFullYear();
+    if(isQtrFull(r)) return 'Q'+(Math.floor(r.from.getMonth()/3)+1)+' '+r.from.getFullYear();
+    if(isMonthFull(r)) return r.from.toLocaleDateString('en-US',{month:'short',year:'numeric'});
+    var a=r.from.toLocaleDateString('en-US',{month:'short',day:'numeric'}),
+        b=r.to.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    return r.from.getFullYear()===r.to.getFullYear() ? a+' – '+b+', '+r.to.getFullYear()
+      : a+' '+r.from.getFullYear()+' – '+b+' '+r.to.getFullYear();
+  }
+
+  /* per-machine history: each terminal has its own annual trajectory */
+  function machGrowth(m){ var s=String(m.id),h=0,i; for(i=0;i<s.length;i++) h=(h*33+s.charCodeAt(i))%1009; return 1+(-0.045+(h%23)*0.01); }
+  function machRows(r){
+    var yrs=yrsFrom(new Date((r.from.getTime()+r.to.getTime())/2)), tot=rangeNet(r.from,r.to).net, w=[],sw=0;
+    MACHINES.forEach(function(m){ var v=m.today*Math.pow(machGrowth(m),yrs); w.push({m:m,w:v}); sw+=v; });
+    if(!sw)sw=1;
+    return w.map(function(x){
+      return {id:x.m.id,game:x.m.game,loc:x.m.loc||locName(locSel),net:tot*x.w/sw,
+              hold:Math.max(6.4,Math.min(9.6,x.m.hold+0.06*yrs))};
+    });
+  }
+  function rangeStats(r){
+    var rows=machRows(r),net=0,played=0;
+    rows.forEach(function(x){ net+=x.net; played+=x.net/(x.hold/100); });
+    var mc=rows.length;
+    return {r:r,rows:rows,net:net,share:net*SHARE_LOC,played:played,
+            hold:played?net/played*100:0,wpd:(mc&&r.days)?net/r.days/mc:0,machines:mc};
+  }
+
+  /* ── delta helpers ── */
+  function pctOf(a,b){ return b?((a-b)/b*100):0; }
+  function arrowOf(v){ return v>0.05?'▲':(v<-0.05?'▼':'▬'); }
+  function dchip(a,b,extra){
+    var p=pctOf(a,b),cls=p>0.05?'up':(p<-0.05?'dn':'flat');
+    return '<span class="dchip '+cls+'">'+arrowOf(p)+' '+(p>0?'+':'')+p.toFixed(1)+'%'+(extra?' '+extra:'')+'</span>';
+  }
+  function dText(a,b){ var p=pctOf(a,b); return (p>0?'+':'')+p.toFixed(1)+'%'; }
+  function dColor(v){ return v>0.05?'var(--green-text)':(v<-0.05?'var(--red-text)':'var(--text2)'); }
+
+  /* ── grouped A-vs-B bar chart (shared by revenue + statements) ── */
+  function groupedBars(svgId,items,la,lb){
+    var svg=$(svgId); if(!svg) return;
+    var W=720,H=232,padL=40,padR=12,padT=20,padB=34,max=0;
+    items.forEach(function(it){ max=Math.max(max,it.a,it.b); });
+    if(!max) max=1; max*=1.22;
+    var iw=(W-padL-padR)/Math.max(1,items.length),g='',bars='',labs='',i;
+    for(i=0;i<=4;i++){ var y=padT+(H-padT-padB)*i/4;
+      g+='<line x1="'+padL+'" y1="'+y+'" x2="'+(W-padR)+'" y2="'+y+'" stroke="var(--border)" stroke-width="1"/>'
+        +'<text x="'+(padL-6)+'" y="'+(y+3.5)+'" font-size="9.5" fill="var(--text3)" text-anchor="end" font-family="DM Mono,monospace">'+fmtK(max*(1-i/4))+'</text>';
+    }
+    items.forEach(function(it,i){
+      var x0=padL+i*iw,bw=Math.min(26,iw*0.30),gap=Math.min(6,iw*0.06),
+          xa=x0+iw/2-bw-gap/2,xb=x0+iw/2+gap/2,
+          ha=(H-padT-padB)*(it.a/max),hb=(H-padT-padB)*(it.b/max),
+          ya=H-padB-ha,yb=H-padB-hb,p=pctOf(it.a,it.b),
+          tipW=146,tipH=74,tx=Math.max(2,Math.min(W-tipW-2,x0+iw/2-tipW/2)),
+          ty=Math.max(2,Math.min(ya,yb)-tipH-8);
+      bars+='<g class="eb"><rect x="'+x0+'" y="'+padT+'" width="'+iw+'" height="'+(H-padT-padB)+'" fill="transparent"/>'
+        +'<rect x="'+xb+'" y="'+yb+'" width="'+bw+'" height="'+hb+'" rx="2" fill="var(--border2)"/>'
+        +'<rect class="ebbar" x="'+xa+'" y="'+ya+'" width="'+bw+'" height="'+ha+'" rx="2" fill="var(--accent)"/>'
+        +'<g class="ebtip"><rect x="'+tx+'" y="'+ty+'" width="'+tipW+'" height="'+tipH+'" rx="7" fill="var(--text)" opacity="0.96"/>'
+        +'<text x="'+(tx+10)+'" y="'+(ty+16)+'" font-size="10.5" fill="#fff" opacity="0.75" font-family="DM Mono,monospace">'+it.label+'</text>'
+        +'<text x="'+(tx+10)+'" y="'+(ty+32)+'" font-size="11.5" font-weight="800" fill="#fff" font-family="DM Mono,monospace">'+la+': '+USD(it.a)+'</text>'
+        +'<text x="'+(tx+10)+'" y="'+(ty+47)+'" font-size="11.5" fill="#cfd6e4" font-family="DM Mono,monospace">'+lb+': '+USD(it.b)+'</text>'
+        +'<text x="'+(tx+10)+'" y="'+(ty+63)+'" font-size="10.5" font-weight="800" fill="'+(p>=0?'#7CD992':'#FF9A93')+'" font-family="DM Mono,monospace">'+arrowOf(p)+' '+(p>0?'+':'')+p.toFixed(1)+'% vs '+lb+'</text>'
+        +'</g></g>';
+      labs+='<text x="'+(x0+iw/2)+'" y="'+(H-padB+15)+'" font-size="10.5" fill="var(--text3)" text-anchor="middle" font-family="DM Mono,monospace">'+it.label+'</text>'
+        +'<text x="'+(xa+bw/2)+'" y="'+(ya-5)+'" font-size="9.5" font-weight="800" fill="'+(p>=0?'var(--green-text)':'var(--red-text)')+'" text-anchor="middle" font-family="DM Mono,monospace">'+(p>0?'+':'')+p.toFixed(0)+'%</text>';
+    });
+    svg.innerHTML=g+bars+labs;
+  }
+  function varBar(v,mx){
+    var w=Math.max(3,Math.min(100,Math.abs(v)/(mx||1)*100));
+    return '<span class="vbar"><i style="width:'+w.toFixed(0)+'%;background:'+(v>=0?'var(--green)':'var(--red)')+';"></i></span>';
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════
+     REVENUE  ·  comparative analysis
+     ══════════════════════════════════════════════════════════════════════ */
+  var CMPA={p:'mtd',bench:'yoy',basis:'like',dim:'machine',preset:0,
+            ca:{from:new Date(2026,4,1),to:new Date(2026,4,31)},
+            cb:{from:new Date(2025,4,1),to:new Date(2025,4,31)}};
+  var CMPA_PRESETS=[
+    {t:'This month vs same month last year',p:'mtd',bench:'yoy',basis:'like'},
+    {t:'This month vs last month',p:'mtd',bench:'prior',basis:'like'},
+    {t:'This quarter vs same quarter last year',p:'qtd',bench:'yoy',basis:'like'},
+    {t:'Last quarter vs prior quarter',p:'lastq',bench:'prior',basis:'full'},
+    {t:'Year to date vs last year',p:'ytd',bench:'yoy',basis:'like'},
+    {t:'Last 30 days vs prior 30 days',p:'l30',bench:'prior',basis:'like'},
+    {t:'Custom range',p:'custom',bench:'custom',basis:'like'}
+  ];
+  function calPrev(A,n){
+    if(A.kind==='month'){ var s=new Date(A.from.getFullYear(),A.from.getMonth()-n,1); return {s:s,e:endOfMonth(s)}; }
+    if(A.kind==='quarter'){ var q=new Date(A.from.getFullYear(),A.from.getMonth()-3*n,1); return {s:startOfQuarter(q),e:endOfQuarter(q)}; }
+    var y=A.from.getFullYear()-n; return {s:new Date(y,0,1),e:new Date(y,11,31)};
+  }
+  function calSame(A,n){
+    if(A.kind==='month'){ var s=new Date(A.from.getFullYear()-n,A.from.getMonth(),1); return {s:s,e:endOfMonth(s)}; }
+    if(A.kind==='quarter'){ var q=new Date(A.from.getFullYear()-n,A.from.getMonth(),1); return {s:startOfQuarter(q),e:endOfQuarter(q)}; }
+    var y=A.from.getFullYear()-n; return {s:new Date(y,0,1),e:new Date(y,11,31)};
+  }
+  function cmpaA(){
+    var T=REF_TODAY,k=CMPA.p,s;
+    if(k==='mtd') return R(startOfMonth(T),T,'month');
+    if(k==='lastmonth'){ s=new Date(T.getFullYear(),T.getMonth()-1,1); return R(s,endOfMonth(s),'month'); }
+    if(k==='qtd') return R(startOfQuarter(T),T,'quarter');
+    if(k==='lastq'){ s=new Date(startOfQuarter(T).getFullYear(),startOfQuarter(T).getMonth()-3,1); return R(s,endOfQuarter(s),'quarter'); }
+    if(k==='ytd') return R(new Date(T.getFullYear(),0,1),T,'year');
+    if(k==='lastyear'){ var y=T.getFullYear()-1; return R(new Date(y,0,1),new Date(y,11,31),'year'); }
+    if(k==='l7') return R(addDays(T,-6),T,'rolling');
+    if(k==='l30') return R(addDays(T,-29),T,'rolling');
+    if(k==='l90') return R(addDays(T,-89),T,'rolling');
+    if(k==='l365') return R(addDays(T,-364),T,'rolling');
+    return R(CMPA.ca.from,CMPA.ca.to,'custom');
+  }
+  function cmpaB(A){
+    var m=CMPA.bench,basis=CMPA.basis,roll=(A.kind==='rolling'||A.kind==='custom');
+    if(m==='custom') return R(CMPA.cb.from,CMPA.cb.to,'custom');
+    if(m==='prior'){
+      if(roll){ var t=addDays(A.from,-1); return R(addDays(t,-(A.days-1)),t,A.kind); }
+      var p=calPrev(A,1);
+      if(basis==='like'){ var t2=addDays(p.s,A.days-1); return R(p.s,(t2>p.e?p.e:t2),A.kind); }
+      return R(p.s,p.e,A.kind);
+    }
+    var back=(m==='yoy2')?2:1;
+    if(roll) return R(shiftY(A.from,back),shiftY(A.to,back),A.kind);
+    if(basis==='full'){ var q=calSame(A,back); return R(q.s,q.e,A.kind); }
+    return R(shiftY(A.from,back),shiftY(A.to,back),A.kind);
+  }
+  function cmpaBenchName(){
+    var m=CMPA.bench;
+    return m==='prior'?'Prior period':m==='yoy'?'Same period last year':m==='yoy2'?'Same period 2 yrs ago':'Custom benchmark';
+  }
+  function bucketCount(days){
+    if(days<=16) return Math.max(2,days);
+    if(days<=45) return Math.ceil(days/7);
+    if(days<=110) return Math.min(8,Math.ceil(days/14));
+    if(days<=400) return Math.min(12,Math.ceil(days/30.4));
+    return Math.min(12,Math.ceil(days/91));
+  }
+  function buckets(r,N){
+    var out=[],per=r.days/N,i,s,e;
+    for(i=0;i<N;i++){ s=Math.round(i*per); e=(i===N-1)?r.days-1:Math.round((i+1)*per)-1; if(e<s)e=s;
+      out.push(R(addDays(r.from,s),addDays(r.from,e),'bucket')); }
+    return out;
+  }
+  function bucketLabel(b){
+    if(b.days>=80) return 'Q'+(Math.floor(b.from.getMonth()/3)+1)+" '"+String(b.from.getFullYear()).slice(2);
+    if(b.days>=25) return b.from.toLocaleDateString('en-US',{month:'short'});
+    return b.from.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  }
+  function cmpaDimLabel(){ return CMPA.dim==='loc'?'Location':CMPA.dim==='game'?'Game theme':'Machine'; }
+  function cmpaGroup(A,B){
+    var key=function(x){ return CMPA.dim==='loc'?x.loc:CMPA.dim==='game'?x.game:(x.id+' · '+x.game); };
+    var map={},order=[];
+    A.rows.forEach(function(x){ var k=key(x); if(!map[k]){map[k]={k:k,a:0,b:0};order.push(k);} map[k].a+=x.net; });
+    B.rows.forEach(function(x){ var k=key(x); if(!map[k]){map[k]={k:k,a:0,b:0};order.push(k);} map[k].b+=x.net; });
+    return order.map(function(k){ return map[k]; }).sort(function(x,y){ return (y.a-y.b)-(x.a-x.b); });
+  }
+  function renderCmpA(){
+    if(!$('cmpa-tiles')) return;
+    var A=cmpaA(),B=cmpaB(A),SA=rangeStats(A),SB=rangeStats(B),la='Current',lb=cmpaBenchName();
+    /* selects + chips */
+    if($('cmpa-period')&&$('cmpa-period').value!==CMPA.p) $('cmpa-period').value=CMPA.p;
+    if($('cmpa-bench')&&$('cmpa-bench').value!==CMPA.bench) $('cmpa-bench').value=CMPA.bench;
+    if($('cmpa-basis')) $('cmpa-basis').value=CMPA.basis;
+    if($('cmpa-dim')) $('cmpa-dim').value=CMPA.dim;
+    if($('cmpa-basis-wrap')) $('cmpa-basis-wrap').style.opacity=(A.kind==='rolling'||A.kind==='custom'||CMPA.bench==='custom')?'0.45':'1';
+    for(var i=0;i<CMPA_PRESETS.length;i++){ var c=$('cmpa-pre-'+i); if(c) c.className='chipx'+(CMPA.preset===i?' on':''); }
+    if($('cmpa-cust-a')) $('cmpa-cust-a').style.display=(CMPA.p==='custom')?'flex':'none';
+    if($('cmpa-cust-b')) $('cmpa-cust-b').style.display=(CMPA.bench==='custom')?'flex':'none';
+    if($('cmpa-apply')) $('cmpa-apply').style.display=(CMPA.p==='custom'||CMPA.bench==='custom')?'inline-flex':'none';
+    /* header */
+    var basisTxt=(A.kind==='rolling'||A.kind==='custom')?'rolling window'
+      :(CMPA.basis==='like'?'like-for-like · same day span':'full calendar period');
+    var sameLen=(A.days===B.days);
+    $('cmpa-head').innerHTML=
+      '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">'
+      +'<span style="font-size:15px;font-weight:800;">'+rLabel(A)+'</span>'
+      +'<span style="font-size:12px;font-weight:800;color:var(--text3);">VS</span>'
+      +'<span style="font-size:15px;font-weight:800;color:var(--text2);">'+rLabel(B)+'</span>'
+      +(sameLen?dchip(SA.net,SB.net,'net win'):dchip(SA.net/A.days,SB.net/B.days,'per day'))+'</div>'
+      +'<div style="font-size:12px;color:var(--text3);font-weight:600;margin-top:3px;">'
+      +A.days+' day'+(A.days!==1?'s':'')+' vs '+B.days+' day'+(B.days!==1?'s':'')
+      +' · '+basisTxt+' · '+locScope()
+      +' · per day '+USD(SA.net/A.days)+' vs '+USD(SB.net/B.days)+' ('+dText(SA.net/A.days,SB.net/B.days)+')'
+      +(sameLen?'':' · <span style="color:var(--amber-text);font-weight:800;">unequal spans — read the per-day rate</span>')+'</div>';
+    /* tiles */
+    var tiles=[
+      {l:'Net Win',a:USD(SA.net),b:USD(SB.net),va:SA.net,vb:SB.net},
+      {l:'Your Share (40%)',a:USD(SA.share),b:USD(SB.share),va:SA.share,vb:SB.share},
+      {l:'Hold %',a:SA.hold.toFixed(2)+'%',b:SB.hold.toFixed(2)+'%',va:SA.hold,vb:SB.hold},
+      {l:'Win / Machine / Day',a:USD(SA.wpd),b:USD(SB.wpd),va:SA.wpd,vb:SB.wpd}
+    ];
+    $('cmpa-tiles').innerHTML=tiles.map(function(t){
+      var d=t.va-t.vb,abs=(t.l==='Hold %')?(d>0?'+':'')+d.toFixed(2)+' pp':(d>0?'+':'-')+USD(Math.abs(d));
+      return '<div class="vtile"><div class="vl">'+t.l+'</div><div class="vc">'+t.a+'</div>'
+        +'<div class="vp">'+lb+': '+t.b+'</div>'
+        +dchip(t.va,t.vb)+' <span style="font-size:11.5px;font-weight:700;color:'+dColor(t.va-t.vb)+';">'+abs+'</span></div>';
+    }).join('');
+    /* trend chart, A vs B in parallel buckets */
+    var N=bucketCount(A.days),bA=buckets(A,N),bB=buckets(B,N),items=[];
+    for(var j=0;j<N;j++){
+      items.push({label:bucketLabel(bA[j]),a:rangeNet(bA[j].from,bA[j].to).net,b:rangeNet(bB[j].from,bB[j].to).net});
+    }
+    if($('cmpa-lg-a')) $('cmpa-lg-a').textContent=rLabel(A);
+    if($('cmpa-lg-b')) $('cmpa-lg-b').textContent=rLabel(B);
+    if($('cmpa-chart-t')) $('cmpa-chart-t').textContent='Net win, period split into '+N+' interval'+(N!==1?'s':'')+' · current vs '+lb.toLowerCase();
+    groupedBars('cmpa-chart',items,'Current',lb);
+    /* breakdown table */
+    var g=cmpaGroup(SA,SB),mx=0;
+    g.forEach(function(x){ mx=Math.max(mx,Math.abs(x.a-x.b)); });
+    if($('cmpa-dim-th')) $('cmpa-dim-th').textContent=cmpaDimLabel();
+    $('cmpa-tbody').innerHTML=g.map(function(x){
+      var d=x.a-x.b,p=pctOf(x.a,x.b);
+      return '<tr><td style="font-weight:700;'+(CMPA.dim==='machine'?'font-family:var(--mono);':'')+'">'+x.k+'</td>'
+        +'<td style="text-align:right;font-weight:700;">'+USD(x.a)+'</td>'
+        +'<td style="text-align:right;color:var(--text2);">'+USD(x.b)+'</td>'
+        +'<td style="text-align:right;font-weight:700;color:'+dColor(d)+';">'+(d>0?'+':'-')+USD(Math.abs(d))+'</td>'
+        +'<td style="text-align:right;font-weight:800;color:'+dColor(d)+';">'+arrowOf(p)+' '+dText(x.a,x.b)+'</td>'
+        +'<td style="text-align:right;">'+varBar(d,mx)+'</td>'
+        +'<td style="text-align:right;color:var(--accent);font-weight:700;">'+USD(x.a*SHARE_LOC)+'</td></tr>';
+    }).join('')||'<tr><td colspan="7" style="text-align:center;color:var(--text3);padding:16px;">No data in this range.</td></tr>';
+    var dTot=SA.net-SB.net;
+    if($('cmpa-tfoot')) $('cmpa-tfoot').innerHTML=
+      '<td style="padding:10px 14px;font-weight:800;">Total · '+locScope()+'</td>'
+      +'<td style="text-align:right;padding:10px 14px;font-weight:800;">'+USD(SA.net)+'</td>'
+      +'<td style="text-align:right;padding:10px 14px;font-weight:700;color:var(--text2);">'+USD(SB.net)+'</td>'
+      +'<td style="text-align:right;padding:10px 14px;font-weight:800;color:'+dColor(dTot)+';">'+(dTot>0?'+':'-')+USD(Math.abs(dTot))+'</td>'
+      +'<td style="text-align:right;padding:10px 14px;font-weight:800;color:'+dColor(dTot)+';">'+dText(SA.net,SB.net)+'</td><td></td>'
+      +'<td style="text-align:right;padding:10px 14px;font-weight:800;color:var(--accent);">'+USD(SA.share)+'</td>';
+    /* narrative */
+    var up=g.slice(0,1)[0],dn=g.slice(-1)[0],pNet=pctOf(SA.net,SB.net),
+        dShare=SA.share-SB.share,dHold=SA.hold-SB.hold,perDayA=SA.net/A.days,perDayB=SB.net/B.days;
+    var txt='Net win for <b>'+rLabel(A)+'</b> is <b>'+(pNet>=0?'up':'down')+' '+Math.abs(pNet).toFixed(1)+'%</b> against '
+      +rLabel(B)+' ('+USD(SA.net)+' vs '+USD(SB.net)+'), which moves your 40% share by <b>'
+      +(dShare>=0?'+':'-')+USD(Math.abs(dShare))+'</b>. Per day you are running '+USD(perDayA)+' vs '+USD(perDayB)
+      +' ('+dText(perDayA,perDayB)+').';
+    if(up&&dn&&up.k!==dn.k){
+      txt+=' Biggest gain: <b>'+up.k+'</b> '+dText(up.a,up.b)+' ('+((up.a-up.b)>=0?'+':'-')+USD(Math.abs(up.a-up.b))+
+           '). Biggest drop: <b>'+dn.k+'</b> '+dText(dn.a,dn.b)+' ('+((dn.a-dn.b)>=0?'+':'-')+USD(Math.abs(dn.a-dn.b))+').';
+    }
+    txt+=' Hold is '+(dHold>=0?'up':'down')+' '+Math.abs(dHold).toFixed(2)+' pp.';
+    $('cmpa-insight').innerHTML='<span style="font-size:15px;line-height:1;">💡</span><div>'+txt+'</div>';
+  }
+  window.opCmpAPreset=function(i){
+    var P=CMPA_PRESETS[i]; if(!P) return;
+    CMPA.preset=i; CMPA.p=P.p; CMPA.bench=P.bench; CMPA.basis=P.basis;
+    if(P.p==='custom') cmpaInitCustom();
+    renderCmpA();
+  };
+  window.opCmpASet=function(){
+    CMPA.p=($('cmpa-period')||{}).value||CMPA.p;
+    CMPA.bench=($('cmpa-bench')||{}).value||CMPA.bench;
+    CMPA.basis=($('cmpa-basis')||{}).value||CMPA.basis;
+    CMPA.dim=($('cmpa-dim')||{}).value||CMPA.dim;
+    CMPA.preset=-1;
+    for(var i=0;i<CMPA_PRESETS.length;i++){ var P=CMPA_PRESETS[i];
+      if(P.p===CMPA.p&&P.bench===CMPA.bench&&P.basis===CMPA.basis) CMPA.preset=i; }
+    if(CMPA.p==='custom'||CMPA.bench==='custom') cmpaInitCustom();
+    renderCmpA();
+  };
+  function cmpaInitCustom(){
+    var iso=function(d){ return D0(d).toISOString().slice(0,10); };
+    [['cmpa-af',CMPA.ca.from],['cmpa-at',CMPA.ca.to],['cmpa-bf',CMPA.cb.from],['cmpa-bt',CMPA.cb.to]]
+      .forEach(function(p){ var el=$(p[0]); if(el&&!el.value) el.value=iso(p[1]); });
+  }
+  window.opCmpAApply=function(){
+    var g=function(id){ var v=(($(id)||{}).value)||''; return v?new Date(v+'T00:00:00'):null; };
+    var af=g('cmpa-af'),at=g('cmpa-at'),bf=g('cmpa-bf'),bt=g('cmpa-bt'),msg=$('cmpa-cust-msg');
+    if(CMPA.p==='custom'){
+      if(!af||!at||at<af){ if(msg)msg.textContent='Pick a valid current range.'; return; }
+      CMPA.ca={from:af,to:at};
+    }
+    if(CMPA.bench==='custom'){
+      if(!bf||!bt||bt<bf){ if(msg)msg.textContent='Pick a valid benchmark range.'; return; }
+      CMPA.cb={from:bf,to:bt};
+    }
+    if(msg)msg.textContent=''; renderCmpA(); toast('Comparison updated','📊');
+  };
+  window.opCmpAExport=function(){
+    var A=cmpaA(),B=cmpaB(A),SA=rangeStats(A),SB=rangeStats(B),lb=cmpaBenchName(),rows=[];
+    rows.push(['Comparative analysis','','','','']);
+    rows.push(['Scope',locScope(),'','','']);
+    rows.push(['Current period',rLabel(A),A.days+' days','','']);
+    rows.push([lb,rLabel(B),B.days+' days','','']);
+    rows.push([]);
+    rows.push(['Metric','Current',lb,'Variance','Variance %']);
+    rows.push(['Net win',Math.round(SA.net),Math.round(SB.net),Math.round(SA.net-SB.net),dText(SA.net,SB.net)]);
+    rows.push(['Your share (40%)',Math.round(SA.share),Math.round(SB.share),Math.round(SA.share-SB.share),dText(SA.share,SB.share)]);
+    rows.push(['Hold %',SA.hold.toFixed(2),SB.hold.toFixed(2),(SA.hold-SB.hold).toFixed(2)+' pp',dText(SA.hold,SB.hold)]);
+    rows.push(['Win/machine/day',Math.round(SA.wpd),Math.round(SB.wpd),Math.round(SA.wpd-SB.wpd),dText(SA.wpd,SB.wpd)]);
+    rows.push([]);
+    rows.push([cmpaDimLabel(),'Current',lb,'Variance','Variance %']);
+    cmpaGroup(SA,SB).forEach(function(x){ rows.push([x.k,Math.round(x.a),Math.round(x.b),Math.round(x.a-x.b),dText(x.a,x.b)]); });
+    var csv=rows.map(function(r){ return r.map(function(c){ return '"'+String(c===undefined?'':c).replace(/"/g,'""')+'"'; }).join(','); }).join('\n');
+    try{ var bl=new Blob([csv],{type:'text/csv'}),u=URL.createObjectURL(bl),a=document.createElement('a');
+      a.href=u; a.download='Revenue_Comparison_'+rLabel(A).replace(/[^\w]+/g,'_')+'_vs_'+rLabel(B).replace(/[^\w]+/g,'_')+'.csv';
+      document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(u);
+      toast('Comparison exported','⬇️');
+    }catch(e){ toast('Export blocked','⚠️'); }
+  };
+
+  /* ══════════════════════════════════════════════════════════════════════
+     STATEMENTS  ·  comparative rollups
+     ══════════════════════════════════════════════════════════════════════ */
+  var STMTC={group:'month',bench:'yoy',mode:'same'};
+  function stKey(d,g){
+    if(g==='month') return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2);
+    if(g==='quarter') return d.getFullYear()+'-Q'+(Math.floor(d.getMonth()/3)+1);
+    return ''+d.getFullYear();
+  }
+  function stKeyLabel(k,g){
+    if(g==='month'){ var p=k.split('-'); return new Date(+p[0],+p[1]-1,1).toLocaleDateString('en-US',{month:'short',year:'numeric'}); }
+    if(g==='quarter'){ var q=k.split('-Q'); return 'Q'+q[1]+' '+q[0]; }
+    return k;
+  }
+  function stKeyShift(k,g,n){
+    if(g==='month'){ var p=k.split('-'); return stKey(new Date(+p[0]-n,+p[1]-1,1),g); }
+    if(g==='quarter'){ var q=k.split('-Q'); return (+q[0]-n)+'-Q'+q[1]; }
+    return ''+(+k-n);
+  }
+  function stKeyPrev(k,g){
+    if(g==='month'){ var p=k.split('-'); return stKey(new Date(+p[0],+p[1]-2,1),g); }
+    if(g==='quarter'){ var q=k.split('-Q'),qq=+q[1]-1,y=+q[0]; if(qq<1){qq=4;y--;} return y+'-Q'+qq; }
+    return ''+(+k-1);
+  }
+  function stRollup(g){
+    var map={},order=[];
+    STATEMENTS.forEach(function(s,i){                     /* STATEMENTS runs newest → oldest */
+      var k=stKey(s.end,g);
+      if(!map[k]){ map[k]={k:k,label:stKeyLabel(k,g),n:0,nti:0,share:0,paid:0,pending:0,first:s.end,last:s.end,idx:[]}; order.push(k); }
+      var e=map[k]; e.n++; e.nti+=s.nti; e.share+=s.share; e.idx.push(i);
+      if(s.status==='Paid') e.paid+=s.share; else e.pending+=s.share;
+      if(s.end<e.first) e.first=s.end;
+      if(s.end>e.last) e.last=s.end;
+    });
+    order.sort().reverse();
+    return {map:map,keys:order};
+  }
+  function stExpected(g){ return g==='month'?4:(g==='quarter'?13:52); }   /* statement weeks in a complete period */
+  /* n consecutive statements starting at index i and moving forward in time */
+  function stWindow(i,n){
+    if(i==null||i<0||i>=STATEMENTS.length||i-(n-1)<0) return null;
+    var o={n:n,nti:0,share:0,first:null,last:null,win:true};
+    for(var j=i;j>i-n;j--){ var s=STATEMENTS[j]; o.nti+=s.nti; o.share+=s.share;
+      if(!o.first||s.end<o.first) o.first=s.end;
+      if(!o.last||s.end>o.last) o.last=s.end; }
+    return o;
+  }
+  function stNearestIdx(d){
+    var best=-1,bd=1e15;
+    for(var i=0;i<STATEMENTS.length;i++){ var diff=Math.abs(STATEMENTS[i].end-d); if(diff<bd){ bd=diff; best=i; } }
+    return bd<=4*864e5?best:-1;
+  }
+  /* the benchmark for one rolled-up period, per the selected measure */
+  function stBench(e,g,map){
+    var bench=STMTC.bench,back=(bench==='yoy2')?2:1;
+    if(STMTC.mode==='same'){
+      var oldest=e.idx[e.idx.length-1];
+      if(bench==='prior') return stWindow(oldest+e.n,e.n);
+      var i=stNearestIdx(shiftY(STATEMENTS[oldest].end,back));
+      return i<0?null:stWindow(i,e.n);
+    }
+    return map[(bench==='prior')?stKeyPrev(e.k,g):stKeyShift(e.k,g,back)]||null;
+  }
+  function stBenchName(){ return STMTC.bench==='prior'?'Prior period':(STMTC.bench==='yoy2'?'2 years ago':'Last year'); }
+  function stBenchSub(b,e,g){
+    if(!b) return '';
+    return b.win ? stmtFmtShort(addDays(b.first,-6))+' – '+stmtFmtShort(b.last)
+                 : (b.label||'')+(b.n!==e.n?' · '+b.n+' wks':'');
+  }
+  function renderStmtCmp(){
+    if(!$('stc-tbody')) return;
+    var g=STMTC.group,mode=STMTC.mode,RU=stRollup(g),map=RU.map,
+        lim=g==='month'?14:(g==='quarter'?9:4),
+        view=RU.keys.slice(0,lim),benchName=stBenchName(),
+        val=function(x){ return x?(mode==='avg'?(x.n?x.share/x.n:0):x.share):0; },
+        nti=function(x){ return x?(mode==='avg'?(x.n?x.nti/x.n:0):x.nti):0; };
+    ['group','bench','mode'].forEach(function(kk){
+      var wrap=$('stc-'+kk); if(!wrap) return;
+      var bs=wrap.getElementsByTagName('button');
+      for(var i=0;i<bs.length;i++) bs[i].className=(bs[i].getAttribute('data-v')===STMTC[kk])?'on':'';
+    });
+    var pairs=view.map(function(k){ var e=map[k]; return {e:e,b:stBench(e,g,map)}; }),mx=0,sumP=0,cntP=0;
+    pairs.forEach(function(x){
+      mx=Math.max(mx,Math.abs(val(x.e)-val(x.b)));
+      if(x.b&&val(x.b)>0){ sumP+=pctOf(val(x.e),val(x.b)); cntP++; }
+    });
+    if($('stc-th-b')) $('stc-th-b').textContent=benchName+(mode==='same'?' · equal weeks':'');
+    if($('stc-th-v')) $('stc-th-v').textContent=(mode==='avg'?'Your share / wk':'Your share');
+    if($('stc-th-n')) $('stc-th-n').textContent=(mode==='avg'?'Wks':'Wks now / then');
+    $('stc-tbody').innerHTML=pairs.map(function(x){
+      var e=x.e,b=x.b,a=val(e),bv=val(b),d=a-bv,p=pctOf(a,bv),
+          partial=(e.n<stExpected(g));
+      return '<tr>'
+        +'<td style="font-weight:800;white-space:nowrap;">'+e.label
+        +(partial?' <span class="badge open" style="font-size:10.5px;">in progress</span>':'')
+        +'<div style="font-size:11px;color:var(--text3);font-weight:600;">'+stmtFmtShort(addDays(e.first,-6))+' – '+stmtFmtShort(e.last)+'</div></td>'
+        +'<td style="text-align:right;color:var(--text2);font-weight:700;">'+e.n+(mode==='avg'?'':' / '+(b?b.n:'—'))+'</td>'
+        +'<td style="text-align:right;font-weight:700;">'+USD(nti(e))+'</td>'
+        +'<td style="text-align:right;font-weight:800;color:var(--accent);">'+USD(a)+'</td>'
+        +'<td style="text-align:right;color:var(--text2);">'+(b?USD(bv)+'<div style="font-size:11px;color:var(--text3);font-weight:600;">'+stBenchSub(b,e,g)+'</div>':'—')+'</td>'
+        +'<td style="text-align:right;font-weight:700;color:'+(b?dColor(d):'var(--text3)')+';">'+(b?((d>0?'+':'-')+USD(Math.abs(d))):'—')+'</td>'
+        +'<td style="text-align:right;font-weight:800;color:'+(b?dColor(d):'var(--text3)')+';">'+(b?(arrowOf(p)+' '+dText(a,bv)):'—')+'</td>'
+        +'<td style="text-align:right;">'+(b?varBar(d,mx):'')+'</td>'
+        +'<td style="text-align:right;white-space:nowrap;"><button class="mini" onclick="opStmtCmpDrill(&quot;'+e.k+'&quot;)">Statements</button></td>'
+      +'</tr>';
+    }).join('')||'<tr><td colspan="9" style="text-align:center;color:var(--text3);padding:18px;">No statements yet.</td></tr>';
+    /* tiles */
+    var cur=pairs[0],best=null,bestV=-1;
+    pairs.forEach(function(x){ if(x.e.n>=stExpected(g)&&val(x.e)>bestV){ bestV=val(x.e); best=x.e; } });
+    var yr=REF_TODAY.getFullYear(),ytd=0,ytdLY=0,lyCut=shiftY(REF_TODAY,1);
+    STATEMENTS.forEach(function(s){
+      if(s.end.getFullYear()===yr&&s.end<=REF_TODAY) ytd+=s.share;
+      if(s.end.getFullYear()===yr-1&&s.end<=lyCut) ytdLY+=s.share;
+    });
+    var tiles=[
+      {l:(cur?cur.e.label:'—')+' · your share'+(mode==='avg'?' / wk':''),v:USD(val(cur&&cur.e)),
+       s:benchName+': '+(cur&&cur.b?USD(val(cur.b)):'—'),va:val(cur&&cur.e),vb:val(cur&&cur.b)},
+      {l:'Earned year to date',v:USD(ytd),s:'Same point last year: '+USD(ytdLY),va:ytd,vb:ytdLY},
+      {l:'Best '+(g==='month'?'month':g==='quarter'?'quarter':'year')+' on record',v:best?USD(val(best)):'—',s:best?best.label:'—',plain:true},
+      {l:'Avg change vs '+benchName.toLowerCase(),v:(cntP?((sumP/cntP)>0?'+':'')+(sumP/cntP).toFixed(1)+'%':'—'),
+       s:'across '+cntP+' compared period'+(cntP!==1?'s':''),plain:true,col:cntP?dColor(sumP/cntP):''}
+    ];
+    $('stc-tiles').innerHTML=tiles.map(function(t){
+      return '<div class="vtile"><div class="vl">'+t.l+'</div>'
+        +'<div class="vc"'+(t.col?' style="color:'+t.col+';"':'')+'>'+t.v+'</div>'
+        +'<div class="vp">'+t.s+'</div>'
+        +(t.plain?'':dchip(t.va,t.vb))+'</div>';
+    }).join('');
+    /* chart */
+    var shortLbl=function(s){ return s.replace(/ \d{2}(\d{2})$/," '$1"); };
+    var items=pairs.slice().reverse().map(function(x){ return {label:shortLbl(x.e.label),a:val(x.e),b:val(x.b)}; });
+    if($('stc-lg-a')) $('stc-lg-a').textContent=(mode==='avg'?'Your share / wk':'Your share');
+    if($('stc-lg-b')) $('stc-lg-b').textContent=benchName;
+    if($('stc-chart-t')) $('stc-chart-t').textContent='Owner share by '+g+' · current vs '+benchName.toLowerCase()
+      +(mode==='avg'?' · per-week average':(mode==='same'?' · equal statement weeks':' · period totals'));
+    groupedBars('stc-chart',items,'Share',benchName);
+  }
+  window.opStmtCmpSet=function(k,v){
+    STMTC[k]=v;
+    ['group','bench','mode'].forEach(function(kk){
+      var wrap=$('stc-'+kk); if(!wrap) return;
+      var bs=wrap.getElementsByTagName('button');
+      for(var i=0;i<bs.length;i++) bs[i].className=(bs[i].getAttribute('data-v')===STMTC[kk])?'on':'';
+    });
+    renderStmtCmp();
+  };
+  window.opStmtCmpDrill=function(k){
+    var g=STMTC.group,f,t;
+    if(g==='month'){ var p=k.split('-'); f=new Date(+p[0],+p[1]-1,1); t=endOfMonth(f); }
+    else if(g==='quarter'){ var q=k.split('-Q'); f=new Date(+q[0],(+q[1]-1)*3,1); t=endOfQuarter(f); }
+    else { f=new Date(+k,0,1); t=new Date(+k,11,31); }
+    var iso=function(d){ return D0(d).toISOString().slice(0,10); };
+    if($('stmt-search')) $('stmt-search').value='';
+    if($('stmt-status')) $('stmt-status').value='all';
+    if($('stmt-year')) $('stmt-year').value='all';
+    if($('stmt-limit')) $('stmt-limit').value='all';
+    if($('stmt-from')) $('stmt-from').value=iso(f);
+    if($('stmt-to')) $('stmt-to').value=iso(t);
+    renderStatements();
+    var tb=$('stmt-tbody'); if(tb&&tb.scrollIntoView) tb.scrollIntoView({behavior:'smooth',block:'center'});
+    toast('Filtered to '+stKeyLabel(k,g),'🔎');
+  };
+  window.opStmtCmpExport=function(){
+    var g=STMTC.group,mode=STMTC.mode,RU=stRollup(g),map=RU.map,
+        lim=g==='month'?14:(g==='quarter'?9:4),view=RU.keys.slice(0,lim),
+        benchName=stBenchName(),
+        val=function(x){ return x?(mode==='avg'?(x.n?x.share/x.n:0):x.share):0; },
+        modeName=mode==='avg'?'per-week average':(mode==='same'?'equal statement weeks':'period totals'),
+        rows=[['Statement comparison · by '+g+' · '+modeName+' · '+locScope()],
+              ['Period','Statement weeks','Net Terminal Income','Your share (40%)',benchName,benchName+' window','Variance','Variance %','Paid','Pending']];
+    view.forEach(function(k){
+      var e=map[k],b=stBench(e,g,map),a=val(e),bv=val(b);
+      rows.push([e.label,e.n,Math.round(e.nti),Math.round(a),b?Math.round(bv):'',
+                 b?stBenchSub(b,e,g):'',b?Math.round(a-bv):'',b?dText(a,bv):'',
+                 Math.round(e.paid),Math.round(e.pending)]);
+    });
+    var csv=rows.map(function(r){ return r.map(function(c){ return '"'+String(c===undefined?'':c).replace(/"/g,'""')+'"'; }).join(','); }).join('\n');
+    try{ var bl=new Blob([csv],{type:'text/csv'}),u=URL.createObjectURL(bl),a=document.createElement('a');
+      a.href=u; a.download='Statement_Comparison_by_'+g+'.csv'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(u);
+      toast('Statement comparison exported','⬇️');
+    }catch(e){ toast('Export blocked','⚠️'); }
+  };
+  window.opRenderStmtCmp=function(){ renderStmtCmp(); };
+
 
 
   /* ── Periods ── */
@@ -695,12 +1417,14 @@
   }
   function applyActive(){
     var P=(period===5)?customPeriod():PERIODS[period]; cur=P;
-    var total=locTotal(P.days),prior=total/GROWTH,pct=((total-prior)/prior*100).toFixed(1);
+    var total=locTotal(P.days);
     if($('period-slider'))$('period-slider').value=period;
     if($('custom-panel'))$('custom-panel').style.display=(period===5?'flex':'none');
     for(var k=0;k<6;k++){var el=$('prng-'+k);if(el)el.className='prng'+(k===period?' active':'');}
     $('k-p').textContent=P.sub; $('k-net').textContent=USD(total); $('k-share').textContent=USD(total*SHARE_LOC);
-    $('k-delta').textContent='▲ '+pct+'% vs prior';
+    var dl=kpiDeltas(P.days);
+    $('k-delta').innerHTML='<span style="color:'+dColor(dl.pop)+';">'+arrowOf(dl.pop)+' '+(dl.pop>0?'+':'')+dl.pop.toFixed(1)+'% vs prior</span>'
+      +'<span style="color:var(--text3);"> · </span><span style="color:'+dColor(dl.yoy)+';">'+arrowOf(dl.yoy)+' '+(dl.yoy>0?'+':'')+dl.yoy.toFixed(1)+'% YoY</span>';
     if($('chart-t'))$('chart-t').textContent=P.chartT; if($('chart-sub'))$('chart-sub').textContent=P.chartSub;
     if($('split-op'))$('split-op').textContent=USD(total*SHARE_OP); if($('split-loc'))$('split-loc').textContent=USD(total*SHARE_LOC);
     if($('split-total'))$('split-total').textContent=USD(total); if($('split-unit'))$('split-unit').textContent=P.sub;
@@ -709,7 +1433,14 @@
     if($('k-wpd')) $('k-wpd').textContent=USD(wpd);
     if($('k-count')) $('k-count').textContent='avg · '+mc+' machine'+(mc!==1?'s':'')+(locSel==='all'?' · all sites':'');
     if($('k-hold')) $('k-hold').textContent=avgHold.toFixed(1)+'%';
-    renderChart(); renderMachines(); renderPeriodTbl(); renderPies(); renderCompare();
+    renderChart(); renderMachines(); renderPeriodTbl(); renderPies(); renderCompare(); renderCmpA();
+  }
+  /* prior-period and year-over-year change for the selected time range */
+  function kpiDeltas(days){
+    var a=rangeNet(addDays(REF_TODAY,-(days-1)),REF_TODAY).net,
+        p=rangeNet(addDays(REF_TODAY,-(2*days-1)),addDays(REF_TODAY,-days)).net,
+        y=rangeNet(shiftY(addDays(REF_TODAY,-(days-1)),1),shiftY(REF_TODAY,1)).net;
+    return {pop:pctOf(a,p),yoy:pctOf(a,y)};
   }
   window.opSetPeriod=function(i){ period=Math.max(0,Math.min(5,parseInt(i,10)||0)); if(period===5&&!custom.days)initCustomDefault(); applyActive(); };
   window.opPeriodSlide=function(v){ window.opSetPeriod(v); };
@@ -833,19 +1564,17 @@
 
   /* ── Statements ── */
   var STMT_SHARE=0.4;
-  function buildStatements(base){
-    base=base||16415;
-    var list=[], wave=[1.00,0.98,1.03,0.99,1.02,0.97,1.01,1.04,0.98,1.00,1.02,0.96,1.03,0.99,1.01,0.97,1.02,1.00];
-    var end=new Date(2026,5,14), seq=2618;
-    for(var i=0;i<18;i++){
-      var wkEnd=new Date(end); wkEnd.setDate(end.getDate()-i*7);
-      var wkStart=new Date(wkEnd); wkStart.setDate(wkEnd.getDate()-6);
-      var nti=Math.round(base*wave[i%wave.length]);
+  var STMT_WEEKS=130;                 /* ~2.5 years of history, so year-over-year comparisons have a base */
+  function buildStatements(){
+    var list=[], end=REF_TODAY, seq=2618;
+    for(var i=0;i<STMT_WEEKS;i++){
+      var wkEnd=addDays(end,-i*7), wkStart=addDays(wkEnd,-6);
+      var nti=Math.round(rangeNet(wkStart,wkEnd).net);
       list.push({id:'STMT-'+(seq-i),start:wkStart,end:wkEnd,nti:nti,share:Math.round(nti*STMT_SHARE),status:(i===0?'Pending':'Paid')});
     }
     return list;
   }
-  var STATEMENTS=buildStatements(16415);
+  var STATEMENTS=buildStatements();
   function stmtFmt(d){ return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
   function stmtFmtShort(d){ return d.toLocaleDateString('en-US',{month:'short',day:'numeric'}); }
   function stmtPeriod(s){ return stmtFmtShort(s.start)+' – '+stmtFmtShort(s.end); }
@@ -886,7 +1615,8 @@
     var latest=STATEMENTS[0];
     if(latest&&$('st-latest')){ $('st-latest').textContent='Wk ending '+stmtFmtShort(latest.end); $('st-latest-sub').textContent=USD(latest.share)+' · '+latest.status; }
     var tb=$('stmt-tbody'); if(!tb) return;
-    var view=stmtFiltered();
+    var match=stmtFiltered(),lim=(($('stmt-limit')||{}).value)||'26',
+        view=(lim==='all')?match:match.slice(0,parseInt(lim,10));
     tb.innerHTML=view.map(function(s){
       var idx=STATEMENTS.indexOf(s);
       return '<tr>'
@@ -898,12 +1628,14 @@
         +'<td style="text-align:right;white-space:nowrap;"><button class="mini" onclick="opStmtView('+idx+')">View</button> <button class="mini" onclick="opStmtDownload('+idx+')">⬇ PDF</button></td>'
       +'</tr>';
     }).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:20px;">No statements match your filters.</td></tr>';
-    if($('stmt-count')) $('stmt-count').textContent='· '+view.length+' of '+STATEMENTS.length+' shown';
+    if($('stmt-count')) $('stmt-count').textContent='· showing '+view.length+' of '+match.length+' matching statements · '+STATEMENTS.length+' weeks on file';
+    renderStmtCmp();
   }
   window.opRenderStatements=function(){ renderStatements(); };
   window.opStmtClearFilters=function(){
     ['stmt-search','stmt-from','stmt-to'].forEach(function(id){ if($(id)) $(id).value=''; });
     if($('stmt-status')) $('stmt-status').value='all'; if($('stmt-year')) $('stmt-year').value='all';
+    if($('stmt-limit')) $('stmt-limit').value='26';
     renderStatements(); toast('Filters cleared','✓');
   };
   function stmtLines(s){
@@ -1216,7 +1948,10 @@
       {cap:'Live totals appear in the centre of the donut.', sel:'#pie-loc', act:function(){opPieHover('pie-loc',1);}, dur:4200},
       {cap:'The second donut splits net win by individual slot machine.', sel:'#pie-mach', act:function(){opPieOut('pie-loc'); opPieHover('pie-mach',0);}, dur:4200},
       {cap:'Compare machines side by side \u2014 net win, your share, win-per-day or hold.', sel:'#cmp-metric', act:function(){opPieOut('pie-mach'); opCmpMetric('share');}, dur:5300},
+      {cap:'Comparative analysis answers the owner\u2019s real question \u2014 how does this month compare with the same month last year?', sel:'#cmpa-card', act:function(){opCmpMetric('net'); opCmpAPreset(0);}, dur:6300},
+      {cap:'Switch the comparison to last quarter, year to date, or any two custom windows \u2014 machine by machine.', sel:'#cmpa-tiles', act:function(){opCmpAPreset(3);}, dur:5600},
       {cap:'The Statements tab \u2014 your weekly owner-share statements, no more emailed PDFs.', sel:NAV('statements'), act:function(){opCmpMetric('net'); opTab('statements');}, dur:5600},
+      {cap:'Statements roll up by month, quarter or year \u2014 each one measured against the same period last year.', sel:'#stc-card', act:function(){opStmtCmpSet('group','month');}, dur:5600},
       {cap:'Search and filter by week, status, year or date range.', sel:'#stmt-search', act:function(){var s=$('stmt-search'); if(s){s.value='pending'; opRenderStatements();}}, dur:3800},
       {cap:'Open any statement to preview the full breakdown\u2026', sel:'#stmt-tbody', act:function(){opStmtClearFilters(); if($('stmt-search'))$('stmt-search').value=''; opRenderStatements(); opStmtView(0);}, dur:3100},
       {cap:'\u2026then download it as a PDF in one click.', sel:'#stmt-pv-dl', dur:3800},
